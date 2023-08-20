@@ -1,0 +1,33 @@
+[
+    {
+        "name": "_OutputFormatter",
+        "description": "Output formatter. Should always be used to format your response to the user.",
+        "parameters": {
+            "title": "_OutputFormatter",
+            "description": "Output formatter. Should always be used to format your response to the user.",
+            "type": "object",
+            "properties": {
+                "output": { "$ref": "#/definitions/GenieCommand" }
+            },
+            "required": ["output"],
+            "definitions": {
+                "Operation": {
+                    "title": "Operation",
+                    "description": "An enumeration.",
+                    "enum": ["WriteFile", "EditFile"]
+                },
+                "GenieCommand": {
+                    "title": "GenieCommand",
+                    "type": "object",
+                    "properties": {
+                        "op": {
+                            "description": "The type of action to perform",
+                            "allOf": [{ "$ref": "#/definitions/Operation" }]
+                        }
+                    },
+                    "required": ["op"]
+                }
+            }
+        }
+    }
+]
