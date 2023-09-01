@@ -47,46 +47,48 @@ llm = ChatOpenAI(temperature=0.1)
 
 # Method 1 of using schema directly
 
-# chain = create_structured_output_chain({
-#     'type': 'object',
-#     'properties': {
-#         'op': {
-#             'type': 'string',
-#             'enum': ['WRITE_FILE', 'LIST_FILES'],
-#             'description': 'Type of operation to perform'
-#         }
-#     },
-#     'required': ['op']
-# }, llm, prompt, verbose=True)
+chain = create_structured_output_chain({
+    'type': 'object',
+    'properties': {
+        'op': {
+            'type': 'string',
+            'enum': ['WRITE_FILE', 'LIST_FILES'],
+            'description': 'Type of operation to perform'
+        }
+    },
+    'required': ['op']
+}, llm, prompt, verbose=True)
 
 # What do we need to do to fix the generated one?
-chain = create_structured_output_chain({
-    "title": "_OutputFormatter",
-    "description": "Output formatter. Should always be used to format your response to the user.",
-    "type": "object",
-    "properties": {
-        "output": { "$ref": "#/definitions/GenieCommand" }
-    },
-    "required": ["output"],
-    "definitions": {
-        "Operation": {
-            "title": "Operation",
-            "description": "An enumeration.",
-            "enum": ["WriteFile", "EditFile"]
-        },
-        "GenieCommand": {
-            "title": "GenieCommand",
-            "type": "object",
-            "properties": {
-                "op": {
-                    "description": "The type of action to perform",
-                    "allOf": [{ "$ref": "#/definitions/Operation" }]
-                }
-            },
-            "required": ["op"]
-        }
-    }
-}, llm, prompt, verbose=True)
+# chain = create_structured_output_chain({
+#     "title": "_OutputFormatter",
+#     "description": "Output formatter. Should always be used to format your response to the user.",
+#     "type": "object",
+#     "properties": {
+#         "output": { "$ref": "#/definitions/GenieCommand" }
+#     },
+#     "required": ["output"],
+#     "definitions": {
+#         "Operation": {
+#             "title": "Operation",
+#             "description": "An enumeration.",
+#             "enum": ["WriteFile", "EditFile"]
+#         },
+#         "GenieCommand": {
+#             "title": "GenieCommand",
+#             "type": "object",
+#             "properties": {
+#                 "op": {
+#                     "description": "The type of action to perform",
+#                     #"allOf": [{ "$ref": "#/definitions/Operation" }]
+#                     'type': 'string',
+#                     "enum": ["WriteFile", "EditFile"]
+#                 }
+#             },
+#             "required": ["op"]
+#         }
+#     }
+# }, llm, prompt, verbose=True)
 
 
 '''
