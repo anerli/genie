@@ -2,6 +2,8 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
 from langchain.chains.openai_functions import create_structured_output_chain
 
+import os
+
 llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
 
 planning_template = '''
@@ -11,10 +13,10 @@ You are trying to create the following software:
 {goal}
 ```
 Here are all the files in the project so far:
-[no files yet]
+{workspace_desc}
 
 The report from the last time the project was run:
-[project has not yet been run]
+{run_report}
 
 Plan which file to write to (an existing file, or a new one) and what needs to be done in that file.
 After this is done, the program will be run. Plan what to check for and take notes on when the program is being run.
@@ -72,6 +74,24 @@ engineering_chain = create_structured_output_chain({
     'required': ['write_filepath', 'write_plan', 'run_plan']
 }, llm, engineering_prompt, verbose=True)
 
+def describe_workspace(workspace):
+    desc = ''
+    for root, _dirs, files in os.walk(workspace):
+        for name in files:
+            path = os.path.join(root, name)
+            trimmed_path = os.path.relpath(path, workspace).replace('\\', '/')
+            #print(trimmed_path)
+            desc += trimmed_path + '\n```'
+            with open(path, 'r') as f:
+                desc += f.read()
+            desc += '\n```\n\n'
+        # for name in dirs:
+        #     print(os.path.join(root, name))
+    if desc == '':
+        desc = '(no files yet)'
+    return desc
+
+
 def execute_action(workspace, filepath, content):
     # Execute engineering action in the workspace
     with open(workspace + '/' + filepath, 'w') as f:
@@ -79,12 +99,24 @@ def execute_action(workspace, filepath, content):
 
 
 if __name__ == '__main__':
+    import json
+
     workspace = './test_workspace'
     goal = 'Write a program that finds the first 100 prime numbers.'
 
-    plan = planning_chain.run(goal=goal)
+    plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report='[project has not yet been run]')
     print(plan)
+
+    with open('logs/plan.json', 'w') as f:
+        json.dump(plan, f, indent=4)
+    
     action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
     print(action)
+
+    with open('logs/action.json', 'w') as f:
+        json.dump(action, f, indent=4)
+
     execute_action(workspace, plan['write_filepath'], action['file_content'])
+
+    #print(describe_workspace(workspace))
     
