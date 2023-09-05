@@ -3,6 +3,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
 from langchain.chains.openai_functions import create_structured_output_chain
 
 import os
+import subprocess
 
 llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
 
@@ -37,12 +38,16 @@ planning_chain = create_structured_output_chain({
             'type': 'string',
             'description': 'What the engineer should do with the specified file'
         },
+        'run_filepath': {
+            'type': 'string',
+            'description': 'What file the engineer should run'
+        },
         'run_plan': {
             'type': 'string',
             'description': 'What the engineer should look for, or take notes on, when running the program'
         },
     },
-    'required': ['write_filepath', 'write_plan', 'run_plan']
+    'required': ['write_filepath', 'write_plan', 'run_filepath', 'run_plan']
 }, llm, planning_prompt, verbose=True)
 
 engineering_template = '''
@@ -56,6 +61,8 @@ The Engineering Manager AI has planned for you to create the file {filepath}, wh
 ```
 {plan}
 ```
+
+Pay attention to the file extension and write the appropriate code.
 '''[1:-1]
 # could dynamically say edit/create based on file existence
 
@@ -97,6 +104,10 @@ def execute_action(workspace, filepath, content):
     with open(workspace + '/' + filepath, 'w') as f:
         f.write(content)
 
+def run_python_project(workspace, run_filepath):
+    from runner import run_python_file
+
+    run_python_file(os.path.join(workspace, run_filepath))
 
 if __name__ == '__main__':
     import json
@@ -104,19 +115,20 @@ if __name__ == '__main__':
     workspace = './test_workspace'
     goal = 'Write a program that finds the first 100 prime numbers.'
 
-    plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report='[project has not yet been run]')
-    print(plan)
+    # plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report='[project has not yet been run]')
+    # print(plan)
 
-    with open('logs/plan.json', 'w') as f:
-        json.dump(plan, f, indent=4)
+    # with open('logs/plan.json', 'w') as f:
+    #     json.dump(plan, f, indent=4)
     
-    action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
-    print(action)
+    # action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
+    # print(action)
 
-    with open('logs/action.json', 'w') as f:
-        json.dump(action, f, indent=4)
+    # with open('logs/action.json', 'w') as f:
+    #     json.dump(action, f, indent=4)
 
-    execute_action(workspace, plan['write_filepath'], action['file_content'])
+    # execute_action(workspace, plan['write_filepath'], action['file_content'])
 
-    #print(describe_workspace(workspace))
+    run_python_project(workspace, 'test_run.py')
+
     

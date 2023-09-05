@@ -1,5 +1,6 @@
 {
     "write_filepath": "prime_numbers.py",
-    "write_plan": "Write a program that finds the first 100 prime numbers.",
+    "write_plan": "Implement a function to check if a number is prime. Then, write a program that finds the first 100 prime numbers.",
+    "run_filepath": "prime_numbers.py",
     "run_plan": "Check if the program correctly finds the first 100 prime numbers."
 }
