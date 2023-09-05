@@ -8,10 +8,10 @@ def monitor_stdout(process, output_queue):
     #buffer = ""
     while True:
         char = process.stdout.read(1)#1)
-        print('Read:', char)
+        print(f'Read: {repr(char)}')
         #if char:
         output_queue.put(char)
-        print('Queue:', list(output_queue.queue))
+        #print('Queue:', list(output_queue.queue))
             # print('Char')
             # buffer += char
             # print('New buffer:', buffer)
@@ -23,8 +23,13 @@ def monitor_stdout(process, output_queue):
             #     buffer = ""
         # else:
         #     print('No char')
-            
-        if process.poll() is not None:
+        
+        '''
+        problem with this: if we still have stuff in stdout it still might return done here
+        '''
+
+        # Seems to return char '' when process is over, so first check here may not be needed even.
+        if process.poll() is not None and char == '':
             print('Returning from monitor')
             return
 
@@ -60,14 +65,23 @@ def run_python_file(filename):
     buffer = ""
     #receiving = True
     try:
-        while process.poll() is None:
+        # can't quit when process done, monitor thread may not be done transferring to buffer
+        #while process.poll() is None:
+        while True:#monitor_thread.is_alive() or not output_queue.empty():
+            time.sleep(1)
+            print('Monitor is alive? ', monitor_thread.is_alive())
+            print('Queue is empty? ', output_queue.empty())
+            print(f'Buffer: {repr(buffer)}')
+            #print('Buffer is empty? ', buffer.empty())
+            if not monitor_thread.is_alive() and output_queue.empty() and buffer == "": #output_queue.empty():
+                break
             #data_available = data_available_event.wait(1)  # Wait for 1 second
-            print('Data available thing done')
+            #print('Data available thing done')
             
             # Process the buffer if the event was set or if there's data in the buffer
             # if buffer:
             #     print('data available or buffer')
-            time.sleep(1)
+            
             if output_queue.empty():
                 # Done with this batch
                 print('done with buffer:', buffer)
@@ -79,9 +93,9 @@ def run_python_file(filename):
             while not output_queue.empty():
                 #while output_queue.
                 ch = output_queue.get()
-                print('adding char to buffer:', ch)
+                #print('adding char to buffer:', ch)
                 buffer += ch#output_queue.get()
-                print('buffer:', buffer)
+                #print('buffer:', buffer)
                 #receiving = True
                 # while not output_queue.empty():
                 #     ch = output_queue.get()
