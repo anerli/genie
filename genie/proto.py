@@ -5,6 +5,8 @@ from langchain.chains.openai_functions import create_structured_output_chain
 import os
 import subprocess
 
+from runner import create_workspace_python_runner
+
 llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
 
 planning_template = '''
@@ -129,6 +131,8 @@ if __name__ == '__main__':
 
     # execute_action(workspace, plan['write_filepath'], action['file_content'])
 
-    run_python_project(workspace, 'test_run.py')
+    #run_python_project(workspace, 'test_run.py')
+    runner = create_workspace_python_runner(workspace, 'test_run.py')
+    runner.debug_run()
 
     

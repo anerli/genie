@@ -2,6 +2,7 @@ import subprocess
 import threading
 import queue
 import time
+import os
 
 def monitor_stdout(process, output_queue):
     """Monitor the stdout of the subprocess and append it to a buffer."""
@@ -67,6 +68,94 @@ def run_python_file(filename):
     if stderr:
         print(f"Error: {stderr.strip()}")
 
-if __name__ == "__main__":
-    filename = input("Enter the path to the Python file you want to run: ")
-    run_python_file(filename)
+class ProcessRunner:
+    def __init__(self, process_args, relisten_time=1.0, max_output_time=10.0):
+        self.process_args = process_args
+        self.relisten_time = relisten_time
+        self.max_output_time = max_output_time
+    
+    def start(self):
+        self.process = subprocess.Popen(
+            #["python", filename],
+            self.process_args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+            universal_newlines=True
+        )
+
+        self.output_queue = queue.Queue()
+
+        self.monitor_thread = threading.Thread(target=monitor_stdout, args=(self.process, self.output_queue))
+        self.monitor_thread.start()
+    
+    def next(self, stdin=None):
+        if stdin != None:
+            self.process.stdin.write(stdin + '\n')
+            self.process.stdin.flush()
+        # if not self.monitor_thread.is_alive() and self.output_queue.empty() and self.buffer == "":
+        #     return '', True
+
+        buffer = self._collect_output_batch()
+        is_done = not self.monitor_thread.is_alive() and self.output_queue.empty() and buffer == ''
+
+        return buffer, is_done
+
+        # if self.output_queue.empty() and self.buffer:
+        #     # Done with this batch
+        #     # print('done with buffer:', buffer)
+
+        #     # ai_response = interact_with_ai(buffer)
+        #     # if ai_response:
+        #     #     process.stdin.write(ai_response + '\n')
+        #     #     process.stdin.flush()
+
+        #     buffer = ""
+        # while not output_queue.empty():
+        #     ch = output_queue.get()
+        #     buffer += ch
+        '''
+        Returns text, is_done
+        Get next block of stdout text, and optionally pass into stdin
+        '''
+    
+    def _collect_output_batch(self):
+        # Collect next batch of output
+        buffer = ''
+        total_time = 0.0
+        while True:
+            # Wait for output
+            time.sleep(self.relisten_time)
+            total_time += self.relisten_time
+
+            if self.output_queue.empty():
+                break
+
+            while not self.output_queue.empty():
+                ch = self.output_queue.get()
+                buffer += ch
+            
+            if total_time > self.max_output_time:
+                break
+        
+        return buffer
+    
+    def close(self):
+        self.monitor_thread.join()
+    
+    def debug_run(self):
+        # Example against user input as stub for AI response
+        self.start()
+        is_done = False
+        stdin = None
+        while not is_done:
+            stdout, is_done = self.next(stdin)
+            print('stdout:', stdout)
+            stdin = input('stdin: ')
+        self.close()
+
+
+def create_workspace_python_runner(workspace, python_file_path):
+    return ProcessRunner(['python', os.path.join(workspace, python_file_path)])
