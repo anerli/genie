@@ -4,16 +4,28 @@ import queue
 import time
 import os
 
-def monitor_stdout(process, output_queue):
+def monitor_stdout(process, stdout_queue):
     """Monitor the stdout of the subprocess and append it to a buffer."""
     while True:
         char = process.stdout.read(1)
         #print(f'Read: {repr(char)}')
-        output_queue.put(char)
+        stdout_queue.put(char)
 
         # Seems to return char '' when process is over, so first check here may not be needed even.
         if process.poll() is not None and char == '':
-            print('Returning from monitor')
+            print('Returning from stdout monitor')
+            return
+
+def monitor_stderr(process, stderr_queue):
+    """Monitor the stderr of the subprocess and append it to a buffer."""
+    while True:
+        char = process.stderr.read(1)
+        #print(f'Read: {repr(char)}')
+        stderr_queue.put(char)
+
+        # Seems to return char '' when process is over, so first check here may not be needed even.
+        if process.poll() is not None and char == '':
+            print('Returning from stderr monitor')
             return
 
 def interact_with_ai(buffered_output):
@@ -86,10 +98,14 @@ class ProcessRunner:
             universal_newlines=True
         )
 
-        self.output_queue = queue.Queue()
+        self.stdout_queue = queue.Queue()
+        self.stderr_queue = queue.Queue()
 
-        self.monitor_thread = threading.Thread(target=monitor_stdout, args=(self.process, self.output_queue))
-        self.monitor_thread.start()
+        self.stdout_monitor_thread = threading.Thread(target=monitor_stdout, args=(self.process, self.stdout_queue))
+        self.stdout_monitor_thread.start()
+
+        self.stderr_monitor_thread = threading.Thread(target=monitor_stderr, args=(self.process, self.stderr_queue))
+        self.stderr_monitor_thread.start()
     
     def next(self, stdin=None, debug=False):
         '''
@@ -100,40 +116,44 @@ class ProcessRunner:
             self.process.stdin.write(stdin + '\n')
             self.process.stdin.flush()
 
-        buffer = self._collect_output_batch()
+        stdout, stderr = self._collect_output_batch()
 
         if debug:
-            print('Monitor is alive? ', self.monitor_thread.is_alive())
-            print('Queue is empty? ', self.output_queue.empty())
-            print(f'Buffer: {repr(buffer)}')
+            print('Stdout monitor is alive? ', self.stdout_monitor_thread.is_alive())
+            print('Stderr monitor is alive? ', self.stderr_monitor_thread.is_alive())
+            #print('Queue is empty? ', self.output_queue.empty())
+            #print(f'Buffer: {repr(buffer)}')
 
-        is_done = not self.monitor_thread.is_alive() and self.output_queue.empty()# and buffer == ''
+        is_done = not self.stdout_monitor_thread.is_alive() and not self.stderr_monitor_thread.is_alive() and self.stdout_queue.empty() and self.stderr_queue.empty()# and buffer == ''
 
-        return buffer, is_done
+        return stdout, stderr, is_done
         
     def _collect_output_batch(self):
         # Collect next batch of output
-        buffer = ''
+        stdout_buffer = ''
+        stderr_buffer = ''
         total_time = 0.0
         while True:
             # Wait for output
             time.sleep(self.relisten_time)
             total_time += self.relisten_time
 
-            if self.output_queue.empty():
+            if self.stdout_queue.empty() and self.stderr_queue.empty():
                 break
 
-            while not self.output_queue.empty():
-                ch = self.output_queue.get()
-                buffer += ch
+            while not self.stdout_queue.empty():
+                stdout_buffer += self.stdout_queue.get()
+            while not self.stderr_queue.empty():
+                stderr_buffer += self.stderr_queue.get()
             
             if total_time > self.max_output_time:
                 break
         
-        return buffer
+        return stdout_buffer, stderr_buffer
     
     def close(self):
-        self.monitor_thread.join()
+        self.stdout_monitor_thread.join()
+        self.stderr_monitor_thread.join()
     
     def debug_run(self):
         # Example against user input as stub for AI response
@@ -141,8 +161,9 @@ class ProcessRunner:
         is_done = False
         stdin = None
         while True:
-            stdout, is_done = self.next(stdin, True)
+            stdout, stderr, is_done = self.next(stdin, True)
             print('stdout:', stdout)
+            print('stderr:', stderr)
             if is_done:
                 break
             stdin = input('stdin: ')
