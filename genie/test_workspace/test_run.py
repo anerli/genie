@@ -20,3 +20,5 @@ def find_prime_numbers(n):
 if __name__ == '__main__':
     primes = find_prime_numbers(int(input('Hello range for primes to find? ')))
     print(primes)
+    primes = find_prime_numbers(int(input('Hello range for primes to find, again? ')))
+    print(primes)

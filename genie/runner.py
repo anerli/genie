@@ -91,36 +91,26 @@ class ProcessRunner:
         self.monitor_thread = threading.Thread(target=monitor_stdout, args=(self.process, self.output_queue))
         self.monitor_thread.start()
     
-    def next(self, stdin=None):
-        if stdin != None:
-            self.process.stdin.write(stdin + '\n')
-            self.process.stdin.flush()
-        # if not self.monitor_thread.is_alive() and self.output_queue.empty() and self.buffer == "":
-        #     return '', True
-
-        buffer = self._collect_output_batch()
-        is_done = not self.monitor_thread.is_alive() and self.output_queue.empty() and buffer == ''
-
-        return buffer, is_done
-
-        # if self.output_queue.empty() and self.buffer:
-        #     # Done with this batch
-        #     # print('done with buffer:', buffer)
-
-        #     # ai_response = interact_with_ai(buffer)
-        #     # if ai_response:
-        #     #     process.stdin.write(ai_response + '\n')
-        #     #     process.stdin.flush()
-
-        #     buffer = ""
-        # while not output_queue.empty():
-        #     ch = output_queue.get()
-        #     buffer += ch
+    def next(self, stdin=None, debug=False):
         '''
         Returns text, is_done
         Get next block of stdout text, and optionally pass into stdin
         '''
-    
+        if stdin != None:
+            self.process.stdin.write(stdin + '\n')
+            self.process.stdin.flush()
+
+        buffer = self._collect_output_batch()
+
+        if debug:
+            print('Monitor is alive? ', self.monitor_thread.is_alive())
+            print('Queue is empty? ', self.output_queue.empty())
+            print(f'Buffer: {repr(buffer)}')
+
+        is_done = not self.monitor_thread.is_alive() and self.output_queue.empty()# and buffer == ''
+
+        return buffer, is_done
+        
     def _collect_output_batch(self):
         # Collect next batch of output
         buffer = ''
@@ -150,10 +140,14 @@ class ProcessRunner:
         self.start()
         is_done = False
         stdin = None
-        while not is_done:
-            stdout, is_done = self.next(stdin)
+        while True:
+            stdout, is_done = self.next(stdin, True)
             print('stdout:', stdout)
+            if is_done:
+                break
             stdin = input('stdin: ')
+            if stdin == '':
+                stdin = None
         self.close()
 
 
