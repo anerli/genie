@@ -5,7 +5,8 @@ from langchain.chains.openai_functions import create_structured_output_chain
 import os
 import subprocess
 
-from runner import create_workspace_python_runner
+#from runner import create_workspace_python_runner
+from run_chain import run_and_reflect
 
 llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
 
@@ -132,7 +133,7 @@ if __name__ == '__main__':
     # execute_action(workspace, plan['write_filepath'], action['file_content'])
 
     #run_python_project(workspace, 'test_run.py')
-    runner = create_workspace_python_runner(workspace, 'test_run.py')
-    runner.debug_run()
+    #runner = create_workspace_python_runner(workspace, 'test_run.py')
+    #runner.debug_run()
 
-    
+    run_and_reflect(workspace, 'test_run.py', 'Check if the program correctly finds the first 100 prime numbers.')

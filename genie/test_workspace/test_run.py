@@ -20,6 +20,9 @@ def find_prime_numbers(n):
 if __name__ == '__main__':
     primes = find_prime_numbers(int(input('Hello range for primes to find? ')))
     print(primes)
-    invalid code, clearly
     primes = find_prime_numbers(int(input('Hello range for primes to find, again? ')))
     print(primes)
+
+    if len(primes) > 10:
+        # Example to show stderr
+        x = 1 / 0
