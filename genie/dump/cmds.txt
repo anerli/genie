@@ -1,0 +1,3 @@
+py .\proto.py ./testing/pi_quiz "Write a python program that is able to digits of PI accurately, and quizzes the user by having them guess each digit in order. The user scores points for every digit correct. They have 3 strikes for incorrect digits, and after that they lose. Use stdin/stdout for user interaction."
+- somewhat difficult project as it involves repeated I/O, so will be good to test as I imrpove the runner.
+

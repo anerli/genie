@@ -3,10 +3,11 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
 from langchain.chains.openai_functions import create_structured_output_chain
 from process_runner import create_workspace_python_runner
 
-llm = ChatOpenAI(temperature=0.2, model='gpt-3.5-turbo')
+llm = ChatOpenAI(temperature=0.7, model='gpt-3.5-turbo')
 
 run_template = '''
 You are a software tester, running and testing code that you have written.
+You are the user.
 You are not able to read the code itself but you are currently running the code.
 
 Your manager has outlined the run plan for this test:
@@ -61,7 +62,7 @@ run_chain = create_structured_output_chain({
             'description': 'Set terminate to true if you believe the program is stuck or if you have gathered all necessary information'#'If you believe the program to be stuck or looping forever, set terminate to true. Default is false.'
         }
     },
-    'required': ['stdin', 'thoughts']#, 'notes']
+    'required': ['stdin', 'thoughts', 'terminate']#, 'notes']
 }, llm, run_prompt, verbose=True)
 
 def summarize_history(history):

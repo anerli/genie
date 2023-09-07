@@ -1,7 +1,7 @@
 {
     "write_filepath": "pi_quiz.py",
-    "write_plan": "Fix the error in the main function where it cannot find the '__main__' module",
+    "write_plan": "Implement the logic to calculate the digits of PI accurately using the Bailey-Borwein-Plouffe (BBP) formula",
     "run_filepath": "pi_quiz.py",
-    "run_plan": "Check if the program runs without any errors and if the user interaction works correctly",
+    "run_plan": "Run the program and check if it correctly calculates and quizzes the user on the digits of PI",
     "is_finished": false
 }

@@ -2,14 +2,71 @@
     "history": [
         [
             "stdout",
+            "Guess the next digit of PI: "
+        ],
+        [
+            "stderr",
+            ""
+        ],
+        [
+            "stdout",
             ""
         ],
         [
             "stderr",
-            "C:\\Users\\anerli\\anaconda3\\python.exe: can't find '__main__' module in 'C:\\\\Users\\\\anerli\\\\Sync\\\\projects\\\\genie\\\\genie\\\\testing\\\\pi_quiz\\\\'\n"
+            ""
+        ],
+        [
+            "stdin",
+            "4"
+        ],
+        [
+            "stdout",
+            "Incorrect!\nGuess the next digit of PI: "
+        ],
+        [
+            "stderr",
+            ""
+        ],
+        [
+            "stdin",
+            "4"
+        ],
+        [
+            "stdout",
+            "Incorrect!\nGuess the next digit of PI: "
+        ],
+        [
+            "stderr",
+            ""
+        ],
+        [
+            "stdout",
+            ""
+        ],
+        [
+            "stderr",
+            ""
+        ],
+        [
+            "stdin",
+            "5"
+        ],
+        [
+            "stdout",
+            "Incorrect!\nGame over! You lost.\nYour score: 0\n"
+        ],
+        [
+            "stderr",
+            ""
         ]
     ],
     "thoughts": [
-        "The program is not running and is throwing an error. It seems that it cannot find the '__main__' module in the specified path. I need to investigate further to understand the cause of the error."
+        "The program is waiting for me to guess the next digit of PI. I should input a digit and see how the program responds.",
+        "I will input the digit 4 and see how the program responds.",
+        "",
+        "The program is not responding to my input of 4. I will try inputting a different digit.",
+        "",
+        "The program is not responding to my input of 4. I will try inputting a different digit."
     ]
 }
