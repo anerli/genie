@@ -7,6 +7,7 @@ import subprocess
 
 #from runner import create_workspace_python_runner
 from run_chain import run_and_reflect
+from engineering_chain import get_engineering_chain, get_engineering_prompt
 
 llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
 
@@ -57,36 +58,7 @@ planning_chain = create_structured_output_chain({
     'required': ['write_filepath', 'write_plan', 'run_filepath', 'run_plan', 'is_finished']
 }, llm, planning_prompt, verbose=True)
 
-engineering_template = '''
-You are a Software Engineer, responsible for executing planned actions.
-You are trying to create the following software:
-```
-{goal}
-```
 
-The Engineering Manager AI has planned for you to create the file {filepath}, which does not yet exist. In this file, you are to:
-```
-{plan}
-```
-
-Pay attention to the file extension and write the appropriate code.
-'''[1:-1]
-# could dynamically say edit/create based on file existence
-
-engineering_prompt = ChatPromptTemplate.from_messages([
-    SystemMessagePromptTemplate.from_template(engineering_template)
-])
-
-engineering_chain = create_structured_output_chain({
-    'type': 'object',
-    'properties': {
-        'file_content': {
-            'type': 'string',
-            'description': 'Content to write to the given file'
-        }
-    },
-    'required': ['write_filepath', 'write_plan', 'run_plan']
-}, llm, engineering_prompt, verbose=True)
 
 def describe_workspace(workspace):
     desc = ''
@@ -119,9 +91,14 @@ def execute_action(workspace, filepath, content):
 if __name__ == '__main__':
     import json
     import time
+    import sys
 
     workspace = './test_workspace'
     goal = 'Write a program that finds the first 100 prime numbers.'
+
+    if len(sys.argv) == 3:
+        workspace = sys.argv[1]
+        goal = sys.argv[2]
     
     run_report='[project has not yet been run]'
     while True:
@@ -138,7 +115,8 @@ if __name__ == '__main__':
         with open('logs/plan.json', 'w') as f:
             json.dump(plan, f, indent=4)
         
-        action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
+        engineering_chain = get_engineering_chain()#get_engineering_chain(workspace, plan['write_filepath'], goal, plan['write_plan'])
+        action = engineering_chain.run(system_prompt=get_engineering_prompt(workspace, plan['write_filepath'], goal, plan['write_plan']))#goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
         print('ACTION:')
         print(action)
 

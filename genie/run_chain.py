@@ -3,7 +3,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
 from langchain.chains.openai_functions import create_structured_output_chain
 from process_runner import create_workspace_python_runner
 
-llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
+llm = ChatOpenAI(temperature=0.2, model='gpt-3.5-turbo')
 
 run_template = '''
 You are a software tester, running and testing code that you have written.

@@ -1,7 +1,7 @@
 {
-    "write_filepath": "prime_numbers.py",
-    "write_plan": "Add a function that finds the first 100 prime numbers and prints them.",
-    "run_filepath": "prime_numbers.py",
-    "run_plan": "Check if the program correctly finds and prints the first 100 prime numbers.",
+    "write_filepath": "pi_quiz.py",
+    "write_plan": "Fix the error in the main function where it cannot find the '__main__' module",
+    "run_filepath": "pi_quiz.py",
+    "run_plan": "Check if the program runs without any errors and if the user interaction works correctly",
     "is_finished": false
 }
