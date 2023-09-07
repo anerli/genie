@@ -122,13 +122,19 @@ if __name__ == '__main__':
     run_report='[project has not yet been run]'
     while True:
         plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report=run_report)
+        print('PLAN:')
         print(plan)
+
+        time.sleep(5)
 
         with open('logs/plan.json', 'w') as f:
             json.dump(plan, f, indent=4)
         
         action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
+        print('ACTION:')
         print(action)
+
+        time.sleep(5)
 
         with open('logs/action.json', 'w') as f:
             json.dump(action, f, indent=4)
@@ -140,3 +146,5 @@ if __name__ == '__main__':
 
         print('RUN REPORT (thoughts):')
         print(run_report)
+
+        time.sleep(5)

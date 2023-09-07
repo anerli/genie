@@ -7,16 +7,18 @@ def is_prime(n):
     return True
 
 
-def find_prime_numbers():
+def find_prime_numbers(n):
     prime_numbers = []
+    count = 0
     num = 2
-    while len(prime_numbers) < 100:
+    while count < n:
         if is_prime(num):
             prime_numbers.append(num)
+            count += 1
         num += 1
     return prime_numbers
 
 
 if __name__ == '__main__':
-    primes = find_prime_numbers()
+    primes = find_prime_numbers(100)
     print(primes)

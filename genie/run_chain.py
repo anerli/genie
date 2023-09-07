@@ -126,9 +126,8 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         #     stdout = last_stdout
         # last_stdout = stdout
 
+        # is_done break used to be here, moved down so that thoughts can be had even if no stdin
         
-        if is_done:
-            break
 
         #notes_summary = ''.join(['- ' + note + '\n' for note in all_notes])
         thoughts_summary = '\n'.join(['- ' + thought for thought in all_thoughts])
@@ -160,9 +159,15 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         print('thoughts:', thoughts)
         all_thoughts.append(thoughts)
 
+        # moved down so that thoughts can be had even if no stdin,
+        # especially important if we get stderr immediately
+        if is_done:
+            print('Program is done running.')
+            break
+
         if terminate:
             # LLM thinks the program is stuck
-            print('Termination commenced by LLM')
+            print('Termination commenced by LLM.')
             runner.terminate()
             #self.process.
             break
@@ -172,4 +177,13 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         # if stdin == '':
         #     stdin = None
     runner.close()
+
+    # for debug
+    import json
+    with open('logs/run.json', 'w') as f:
+        json.dump({
+            'history': history,
+            'thoughts': all_thoughts
+        }, f, indent=4)
+
     return all_thoughts#all_notes
