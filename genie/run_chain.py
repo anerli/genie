@@ -9,7 +9,7 @@ run_template = '''
 You are a software tester, running and testing code that you have written.
 You are not able to read the code itself but you are currently running the code.
 
-Your manager has outlined the plan for this test run:
+Your manager has outlined the run plan for this test:
 ```
 {plan}
 ```
@@ -17,11 +17,13 @@ Your manager has outlined the plan for this test run:
 You have access to the stdout and stderr of the program, and can optionally provide stdin.
 You are to consider the plan above, and take any relevant notes about the program, what is going according to plan, what could be improved, and what might be a bug or error.
 
-Here are your notes so far:
-{notes}
+Here are your thoughts so far:
+{thoughts}
 
 Here is the output of the program, and what you have provided as input, thus far:
 {history}
+
+Be direct and pass to stdin immediately if applicable, and terminate as soon as plan is completed.
 '''[1:-1]
 
 # stdout:
@@ -43,18 +45,22 @@ run_chain = create_structured_output_chain({
     'properties': {
         'stdin': {
             'type': 'string',
-            'description': 'Text to pass to stdin. If not provided, nothing will be passed. If the output indicates the program is awaiting input, you should pass something to stdin, even if it is just for the purpose of continuing the program.'
+            'description': 'Text to pass to stdin. Provide empty string to not send anything to stdin.'#'Text to pass to stdin. If not provided, nothing will be passed. If the output indicates the program is awaiting input, you should pass something to stdin, even if it is just for the purpose of continuing the program.'
+        },
+        'thoughts': {
+            'type': 'string',
+            'description': 'Note your thoughts about how the program is running, what inputs you might want to provide, and when you might want to terminate the program'
         },
         'notes': {
             'type': 'string',
-            'description': 'Any new notes to add relevant to how well the program is working or what needs fixing / improving'
+            'description': 'Take note of key information specifically relevant to the run plan: Check if the program correctly finds the first 100 prime numbers.'#'Add any important notes',#'Add notes specifically relevant to the run plan'#'Any new notes to add relevant to how well the program is working or what needs fixing / improving'
         },
         'terminate': {
             'type': 'boolean',
             'description': 'Set terminate to true if you believe the program is stuck or if you have gathered all necessary information'#'If you believe the program to be stuck or looping forever, set terminate to true. Default is false.'
         }
     },
-    'required': ['notes']
+    'required': ['stdin', 'thoughts']#, 'notes']
 }, llm, run_prompt, verbose=True)
 
 def summarize_history(history):
@@ -92,6 +98,7 @@ def summarize_history(history):
 def run_and_reflect(workspace, run_filepath, run_plan):
     print('Running and reflecting!')
     all_notes = []
+    all_thoughts = []
     # Keep track of stdout/stderr/stdin so far so LLM has context
     #summary=''
     history = []
@@ -122,11 +129,16 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         if is_done:
             break
 
-        notes_summary = ''.join(['- ' + note + '\n' for note in all_notes])
+        #notes_summary = ''.join(['- ' + note + '\n' for note in all_notes])
+        thoughts_summary = ''.join(['- ' + thought + '\n' for thought in all_thoughts])
         
-        resp = run_chain.run(plan=run_plan, notes=notes_summary, history=summarize_history(history)) #stdout=stdout, stderr=stderr)
+        resp = run_chain.run(plan=run_plan, thoughts=thoughts_summary, history=summarize_history(history)) #stdout=stdout, stderr=stderr)
         if 'stdin' in resp:
             stdin = resp['stdin']
+
+            # LLM passing blank indicates no stdin
+            if stdin == '':
+                stdin = None
         else:
             stdin = None
         if 'terminate' in resp:
@@ -137,10 +149,15 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         print('stdin:', stdin)
         if stdin != None:
             history.append(('stdin', stdin))
-
-        notes = resp['notes']
-        print('notes:', notes)
-        all_notes.append(notes)
+        
+        if 'notes' in resp:
+            notes = resp['notes']
+            print('notes:', notes)
+            all_notes.append(notes)
+        
+        thoughts = resp['thoughts']
+        print('thoughts:', thoughts)
+        all_thoughts.append(thoughts)
 
         if terminate:
             # LLM thinks the program is stuck
