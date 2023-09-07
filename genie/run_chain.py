@@ -14,9 +14,6 @@ Your manager has outlined the run plan for this test:
 {plan}
 ```
 
-You have access to the stdout and stderr of the program, and can optionally provide stdin.
-You are to consider the plan above, and take any relevant notes about the program, what is going according to plan, what could be improved, and what might be a bug or error.
-
 Here are your thoughts so far:
 {thoughts}
 
@@ -25,6 +22,10 @@ Here is the output of the program, and what you have provided as input, thus far
 
 Be direct and pass to stdin immediately if applicable, and terminate as soon as plan is completed.
 '''[1:-1]
+
+# You have access to the stdout and stderr of the program, and can optionally provide stdin.
+# You are to consider the plan above, and take any relevant notes about the program, what is going according to plan, what could be improved, and what might be a bug or error.
+
 
 # stdout:
 # ```
@@ -51,10 +52,10 @@ run_chain = create_structured_output_chain({
             'type': 'string',
             'description': 'Note your thoughts about how the program is running, what inputs you might want to provide, and when you might want to terminate the program'
         },
-        'notes': {
-            'type': 'string',
-            'description': 'Take note of key information specifically relevant to the run plan: Check if the program correctly finds the first 100 prime numbers.'#'Add any important notes',#'Add notes specifically relevant to the run plan'#'Any new notes to add relevant to how well the program is working or what needs fixing / improving'
-        },
+        # 'notes': {
+        #     'type': 'string',
+        #     'description': 'Take note of key information specifically relevant to the run plan: Check if the program correctly finds the first 100 prime numbers.'#'Add any important notes',#'Add notes specifically relevant to the run plan'#'Any new notes to add relevant to how well the program is working or what needs fixing / improving'
+        # },
         'terminate': {
             'type': 'boolean',
             'description': 'Set terminate to true if you believe the program is stuck or if you have gathered all necessary information'#'If you believe the program to be stuck or looping forever, set terminate to true. Default is false.'
