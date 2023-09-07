@@ -18,9 +18,11 @@ def find_prime_numbers(n):
 
 
 if __name__ == '__main__':
-    primes = find_prime_numbers(int(input('Hello range for primes to find? ')))
+    #primes = find_prime_numbers(int(input('Hello range for primes to find? ')))
+    primes = find_prime_numbers(int(input('Hello number of primes to find? ')))
     print(primes)
-    primes = find_prime_numbers(int(input('Hello range for primes to find, again? ')))
+    #primes = find_prime_numbers(int(input('Hello range for primes to find, again? ')))
+    primes = find_prime_numbers(int(input('Hello number of primes to find, again? ')))
     print(primes)
 
     if len(primes) > 10:

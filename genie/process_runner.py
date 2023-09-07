@@ -13,7 +13,7 @@ def monitor_stdout(process, stdout_queue):
 
         # Seems to return char '' when process is over, so first check here may not be needed even.
         if process.poll() is not None and char == '':
-            print('Returning from stdout monitor')
+            #print('Returning from stdout monitor')
             return
 
 def monitor_stderr(process, stderr_queue):
@@ -25,7 +25,7 @@ def monitor_stderr(process, stderr_queue):
 
         # Seems to return char '' when process is over, so first check here may not be needed even.
         if process.poll() is not None and char == '':
-            print('Returning from stderr monitor')
+            #print('Returning from stderr monitor')
             return
 
 class ProcessRunner:
@@ -118,6 +118,9 @@ class ProcessRunner:
             if stdin == '':
                 stdin = None
         self.close()
+    
+    def terminate(self):
+        self.process.kill()
 
 # class ProcessRunnerContext:
 #     def __init__(self, *args, **kwargs):
