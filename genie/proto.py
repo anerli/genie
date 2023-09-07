@@ -107,33 +107,36 @@ def execute_action(workspace, filepath, content):
     with open(workspace + '/' + filepath, 'w') as f:
         f.write(content)
 
-def run_python_project(workspace, run_filepath):
-    from runner import run_python_file
+# def run_python_project(workspace, run_filepath):
+#     from runner import run_python_file
 
-    run_python_file(os.path.join(workspace, run_filepath))
+#     run_python_file(os.path.join(workspace, run_filepath))
 
 if __name__ == '__main__':
     import json
+    import time
 
     workspace = './test_workspace'
     goal = 'Write a program that finds the first 100 prime numbers.'
-
-    # plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report='[project has not yet been run]')
-    # print(plan)
-
-    # with open('logs/plan.json', 'w') as f:
-    #     json.dump(plan, f, indent=4)
     
-    # action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
-    # print(action)
+    run_report='[project has not yet been run]'
+    while True:
+        plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report=run_report)
+        print(plan)
 
-    # with open('logs/action.json', 'w') as f:
-    #     json.dump(action, f, indent=4)
+        with open('logs/plan.json', 'w') as f:
+            json.dump(plan, f, indent=4)
+        
+        action = engineering_chain.run(goal=goal, plan=plan['write_plan'], filepath=plan['write_filepath'])
+        print(action)
 
-    # execute_action(workspace, plan['write_filepath'], action['file_content'])
+        with open('logs/action.json', 'w') as f:
+            json.dump(action, f, indent=4)
 
-    #run_python_project(workspace, 'test_run.py')
-    #runner = create_workspace_python_runner(workspace, 'test_run.py')
-    #runner.debug_run()
+        execute_action(workspace, plan['write_filepath'], action['file_content'])
 
-    run_and_reflect(workspace, 'test_run.py', 'Check if the program correctly finds the first 100 prime numbers.')
+        thoughts = run_and_reflect(workspace, plan['run_filepath'], plan['run_plan'])
+        run_report = '\n'.join(['- ' + thought for thought in thoughts])
+
+        print('RUN REPORT (thoughts):')
+        print(run_report)

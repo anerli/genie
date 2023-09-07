@@ -131,7 +131,7 @@ def run_and_reflect(workspace, run_filepath, run_plan):
             break
 
         #notes_summary = ''.join(['- ' + note + '\n' for note in all_notes])
-        thoughts_summary = ''.join(['- ' + thought + '\n' for thought in all_thoughts])
+        thoughts_summary = '\n'.join(['- ' + thought for thought in all_thoughts])
         
         resp = run_chain.run(plan=run_plan, thoughts=thoughts_summary, history=summarize_history(history)) #stdout=stdout, stderr=stderr)
         if 'stdin' in resp:
@@ -172,4 +172,4 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         # if stdin == '':
         #     stdin = None
     runner.close()
-    return all_notes
+    return all_thoughts#all_notes
