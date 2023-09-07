@@ -17,6 +17,9 @@ Your manager has outlined the plan for this test run:
 You have access to the stdout and stderr of the program, and can optionally provide stdin.
 You are to consider the plan above, and take any relevant notes about the program, what is going according to plan, what could be improved, and what might be a bug or error.
 
+Here are your notes so far:
+{notes}
+
 Here is the output of the program, and what you have provided as input, thus far:
 {history}
 '''[1:-1]
@@ -48,7 +51,7 @@ run_chain = create_structured_output_chain({
         },
         'terminate': {
             'type': 'boolean',
-            'description': 'If you believe the program to be stuck or looping forever, set terminate to true. Default is false.'
+            'description': 'Set terminate to true if you believe the program is stuck or if you have gathered all necessary information'#'If you believe the program to be stuck or looping forever, set terminate to true. Default is false.'
         }
     },
     'required': ['notes']
@@ -118,8 +121,10 @@ def run_and_reflect(workspace, run_filepath, run_plan):
         
         if is_done:
             break
+
+        notes_summary = ''.join(['- ' + note + '\n' for note in all_notes])
         
-        resp = run_chain.run(plan=run_plan, history=summarize_history(history)) #stdout=stdout, stderr=stderr)
+        resp = run_chain.run(plan=run_plan, notes=notes_summary, history=summarize_history(history)) #stdout=stdout, stderr=stderr)
         if 'stdin' in resp:
             stdin = resp['stdin']
         else:
