@@ -1,6 +1,7 @@
 {
     "write_filepath": "prime_numbers.py",
-    "write_plan": "No changes needed. The program is already correct.",
+    "write_plan": "Add a function that finds the first 100 prime numbers and prints them.",
     "run_filepath": "prime_numbers.py",
-    "run_plan": "No input or termination needed. The program will find the first 100 prime numbers and print them."
+    "run_plan": "Check if the program correctly finds and prints the first 100 prime numbers.",
+    "is_finished": false
 }

@@ -1,3 +1,3 @@
 {
-    "file_content": "def is_prime(n):\n    if n <= 1:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\n\ndef find_prime_numbers(n):\n    prime_numbers = []\n    count = 0\n    num = 2\n    while count < n:\n        if is_prime(num):\n            prime_numbers.append(num)\n            count += 1\n        num += 1\n    return prime_numbers\n\n\nif __name__ == '__main__':\n    primes = find_prime_numbers(100)\n    print(primes)"
+    "file_content": "def is_prime(n):\n    if n <= 1:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\n\ndef find_prime_numbers():\n    prime_numbers = []\n    num = 2\n    while len(prime_numbers) < 100:\n        if is_prime(num):\n            prime_numbers.append(num)\n        num += 1\n    for prime in prime_numbers:\n        print(prime)\n\n\nfind_prime_numbers()\n"
 }

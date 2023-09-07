@@ -49,8 +49,12 @@ planning_chain = create_structured_output_chain({
             'type': 'string',
             'description': 'What the engineer should look for, or take notes on, when running the program'
         },
+        'is_finished': {
+            'type': 'boolean',
+            'description': 'If no further changes are needed, set to true'#'Whether the project is finished or not. Set to true once the run report shows the goal is accomplished successfully.'
+        }
     },
-    'required': ['write_filepath', 'write_plan', 'run_filepath', 'run_plan']
+    'required': ['write_filepath', 'write_plan', 'run_filepath', 'run_plan', 'is_finished']
 }, llm, planning_prompt, verbose=True)
 
 engineering_template = '''
@@ -124,8 +128,12 @@ if __name__ == '__main__':
         plan = planning_chain.run(goal=goal, workspace_desc=describe_workspace(workspace), run_report=run_report)
         print('PLAN:')
         print(plan)
-
+        
         time.sleep(5)
+
+        if plan['is_finished']:
+            print('Manager has indicated that the project is finished!')
+            break
 
         with open('logs/plan.json', 'w') as f:
             json.dump(plan, f, indent=4)
