@@ -8,6 +8,7 @@ import subprocess
 #from runner import create_workspace_python_runner
 from run_chain import run_and_reflect
 from engineering_chain import get_engineering_chain, get_engineering_prompt
+from workspace import describe_workspace
 
 llm = ChatOpenAI(temperature=0.0, model='gpt-3.5-turbo')
 
@@ -57,26 +58,6 @@ planning_chain = create_structured_output_chain({
     },
     'required': ['write_filepath', 'write_plan', 'run_filepath', 'run_plan', 'is_finished']
 }, llm, planning_prompt, verbose=True)
-
-
-
-def describe_workspace(workspace):
-    desc = ''
-    for root, _dirs, files in os.walk(workspace):
-        for name in files:
-            path = os.path.join(root, name)
-            trimmed_path = os.path.relpath(path, workspace).replace('\\', '/')
-            #print(trimmed_path)
-            desc += trimmed_path + '\n```'
-            with open(path, 'r') as f:
-                desc += f.read()
-            desc += '\n```\n\n'
-        # for name in dirs:
-        #     print(os.path.join(root, name))
-    if desc == '':
-        desc = '(no files yet)'
-    return desc
-
 
 def execute_action(workspace, filepath, content):
     # Execute engineering action in the workspace

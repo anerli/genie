@@ -2,71 +2,14 @@
     "history": [
         [
             "stdout",
-            "Guess the next digit of PI: "
-        ],
-        [
-            "stderr",
-            ""
-        ],
-        [
-            "stdout",
             ""
         ],
         [
             "stderr",
-            ""
-        ],
-        [
-            "stdin",
-            "4"
-        ],
-        [
-            "stdout",
-            "Incorrect!\nGuess the next digit of PI: "
-        ],
-        [
-            "stderr",
-            ""
-        ],
-        [
-            "stdin",
-            "4"
-        ],
-        [
-            "stdout",
-            "Incorrect!\nGuess the next digit of PI: "
-        ],
-        [
-            "stderr",
-            ""
-        ],
-        [
-            "stdout",
-            ""
-        ],
-        [
-            "stderr",
-            ""
-        ],
-        [
-            "stdin",
-            "5"
-        ],
-        [
-            "stdout",
-            "Incorrect!\nGame over! You lost.\nYour score: 0\n"
-        ],
-        [
-            "stderr",
-            ""
+            "  File \"C:\\Users\\anerli\\Sync\\projects\\genie\\genie\\testing\\poo\\game.py\", line 1\n    def display_game_state(self):\nIndentationError: unexpected indent\n"
         ]
     ],
     "thoughts": [
-        "The program is waiting for me to guess the next digit of PI. I should input a digit and see how the program responds.",
-        "I will input the digit 4 and see how the program responds.",
-        "",
-        "The program is not responding to my input of 4. I will try inputting a different digit.",
-        "",
-        "The program is not responding to my input of 4. I will try inputting a different digit."
+        "The program encountered an IndentationError on line 1. I need to fix this error before proceeding with the test."
     ]
 }
