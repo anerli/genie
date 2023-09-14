@@ -1,7 +1,7 @@
 {
-    "write_filepath": "game.py",
-    "write_plan": "Implement the display_game_state method in the Game class",
-    "run_filepath": "game.py",
-    "run_plan": "Enter the name 'Alice' when prompted and observe the game state display",
+    "write_filepath": "prime_numbers.py",
+    "write_plan": "No changes needed",
+    "run_filepath": "prime_numbers.py",
+    "run_plan": "The program should be run to find the first 100 prime numbers",
     "is_finished": false
 }
